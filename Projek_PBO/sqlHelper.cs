@@ -64,6 +64,20 @@ namespace Projek_PBO
                 return false;
             }
         }
+        public void ExecuteQuery(ref DataSet dataSet, string query, NpgsqlParameter[] parameters = null)
+        {
+            NpgsqlCommand cmd = con.CreateCommand();
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = query;
+            if(parameters != null)
+            foreach (var p in parameters)
+                cmd.Parameters.Add(p);
+            cmd.Connection.Open();
+            NpgsqlDataAdapter npgsqlDataAdapter = new NpgsqlDataAdapter(cmd);
+            npgsqlDataAdapter.Fill(dataSet);
+            cmd.Connection.Close();
+            cmd.Dispose();
+        }
         public bool ExecuteNonQuery(string query, NpgsqlParameter[] parameters)
         {
             try
