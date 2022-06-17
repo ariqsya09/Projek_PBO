@@ -33,12 +33,15 @@ namespace Projek_PBO
                 cmd.Connection = con;
                 cmd.CommandType = System.Data.CommandType.Text;
 
-                if (query != null && parameter != null)
+                if (query != null)
                 {
                     cmd.CommandText = query;
-                    foreach (var p in parameter)
+                    if (parameter != null)
                     {
-                        cmd.Parameters.Add(p);
+                        foreach (var p in parameter)
+                        {
+                            cmd.Parameters.Add(p);
+                        }
                     }
                 }
                 else if (table != null)
