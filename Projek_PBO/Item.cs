@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Projek_PBO
+﻿namespace Projek_PBO
 {
     internal class Item
     {
@@ -19,6 +13,13 @@ namespace Projek_PBO
             Nama = nama;
             Stock = stock;
             Harga = harga;
+        }
+        public Item(System.Data.DataRow row)
+        {
+            Id = int.Parse(row[0].ToString());
+            Nama = (string)row[1];
+            Stock = (int)row[3];
+            Harga = (int)row[2];
         }
 
     }
