@@ -30,16 +30,25 @@ namespace Projek_PBO
             textBoxBayar.KeyPress += inputNumeric;
 
             textBoxDiskon.TextChanged += TextBoxDiskon_TextChanged;
+            textBoxBayar.TextChanged += TextBoxBayar_TextChanged;
+
+            buttonCheckout.Click += ButtonCheckout_Click;
 
             // test
-            DataSet ds = new DataSet();
-            databaseManager.Select(ref ds, "barang");
-            foreach(DataRow row in ds.Tables[0].Rows)
-            {
-                Item item = new Item(row);
-                items.Add(item);
-            }
+            refresh_db();
             refresh_listView();
+        }
+
+        private void ButtonCheckout_Click(object sender, EventArgs e)
+        {
+            checkout();
+        }
+
+        private void TextBoxBayar_TextChanged(object sender, EventArgs e)
+        {
+            int total = int.Parse(textBoxTotal.Text);
+            int bayar = int.Parse(textBoxBayar.Text);
+            textBoxKembalian.Text = (bayar - total).ToString();
         }
 
         private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -195,6 +204,17 @@ namespace Projek_PBO
             }
         }
         /**************** INPUT THINGS ****************/
+        private void refresh_db()
+        {
+            items.Clear();
+            DataSet ds = new DataSet();
+            databaseManager.Select(ref ds, "", "SELECT * FROM BARANG ORDER BY id_barang ASC");
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                Item item = new Item(row);
+                items.Add(item);
+            }
+        }
         private void refresh_listView()
         {
 
@@ -247,6 +267,50 @@ namespace Projek_PBO
             //get diskon
             int diskon = textBoxDiskon.TextLength > 0 ? int.Parse(textBoxDiskon.Text.ToString()) : 0;
             textBoxTotal.Text = (harga - diskon < 0 ? 0 : harga - diskon).ToString();
+        }
+        private void checkout()
+        {
+            if (dataGridView1.Rows.Count <= 1)
+            {
+                MessageBox.Show("Keranjang masih kosong.");
+                return;
+            }
+            if (textBoxBayar.Text.Length == 0)
+            {
+                MessageBox.Show("Mohon isi nominal bayar.");
+                return;
+            }
+            if(textBoxKembalian.Text.Length != 0 && int.Parse(textBoxKembalian.Text) < 0)
+            {
+                MessageBox.Show("Uang bayar kurang.");
+                return;
+            }
+
+            foreach(DataGridViewRow row in dataGridView1.Rows)
+            {
+                // null check
+                if(row.Cells[0].Value != null && row.Cells[0].Value.ToString().Length >= 1)
+                {
+                    int id = int.Parse(row.Cells[0].Value.ToString());
+                    int jumlah = int.Parse(row.Cells[2].Value.ToString());
+                    int stok = 0;
+                    foreach(Item item in items)
+                    {
+                        if(item.Id == id)
+                        {
+                            stok = item.Stock;
+                            break;
+                        }
+                    }
+                    int newStok = stok - jumlah;
+                    Npgsql.NpgsqlParameter[] parameters = new Npgsql.NpgsqlParameter[2];
+                    parameters[0] = new Npgsql.NpgsqlParameter("@stok", newStok);
+                    parameters[1] = new Npgsql.NpgsqlParameter("@id", id);
+                    databaseManager.ExecuteNonQuery("UPDATE barang SET stok_barang = @stok WHERE id_barang = @id", parameters);
+                }
+            }
+            refresh_db();
+            refresh_listView();
         }
     }
 
