@@ -53,6 +53,7 @@
             this.JumlahBarang = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HargaBarang = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Hapus = new System.Windows.Forms.DataGridViewImageColumn();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
@@ -175,7 +176,8 @@
             // 
             this.listView1.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
+            this.columnHeader1,
+            this.columnHeader2});
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(38, 80);
             this.listView1.Margin = new System.Windows.Forms.Padding(2);
@@ -241,7 +243,7 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Nama Barang";
-            this.columnHeader1.Width = 106;
+            this.columnHeader1.Width = 297;
             // 
             // idBarang
             // 
@@ -281,6 +283,10 @@
             this.Hapus.Name = "Hapus";
             this.Hapus.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Hapus.Width = 125;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Stok";
             // 
             // Transaksi
             // 
@@ -339,5 +345,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn JumlahBarang;
         private System.Windows.Forms.DataGridViewTextBoxColumn HargaBarang;
         private System.Windows.Forms.DataGridViewImageColumn Hapus;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }

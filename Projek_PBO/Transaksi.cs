@@ -13,26 +13,43 @@ namespace Projek_PBO
 {
     public partial class Transaksi : Form
     {
+        DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
         private List<Item> items = new List<Item>();
         private static Random random = new Random();
         public Transaksi()
         {
             InitializeComponent();
-            refresh_listView();
+
+
+            
             dataGridView1.EditingControlShowing += DataGridView1_EditingControlShowing;
             dataGridView1.CellValueChanged += DataGridView1_CellValueChanged;
+            dataGridView1.CellClick += DataGridView1_CellClick;
 
             textBoxDiskon.KeyPress += inputNumeric;
             textBoxBayar.KeyPress += inputNumeric;
 
             textBoxDiskon.TextChanged += TextBoxDiskon_TextChanged;
 
-            for (int i = 0; i < 2; i++)
+            // test
+            DataSet ds = new DataSet();
+            databaseManager.Select(ref ds, "barang");
+            foreach(DataRow row in ds.Tables[0].Rows)
             {
-                Item item = new Item(i, RandomString(10), random.Next(1, 10) * 1000);
+                Item item = new Item(row);
                 items.Add(item);
             }
             refresh_listView();
+        }
+
+        private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView dataGrid = sender as DataGridView;
+            // column harga
+            if (dataGrid.CurrentCell.ColumnIndex == 4 && dataGrid.CurrentRow.Index != dataGrid.Rows.Count - 1)
+            {
+                dataGrid.Rows.Remove(dataGrid.CurrentRow);
+            }
         }
 
         public static string RandomString(int length)
@@ -49,6 +66,28 @@ namespace Projek_PBO
 
         private void DataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            //cek kalo stoknya gak lebih dari
+            if(e.ColumnIndex == 2)
+            {
+                int jumlah = int.Parse(dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString());
+                string id = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+                foreach (ListViewItem item in listView1.Items)
+                {
+                    string listviewitem_id = item.SubItems[3].Text;
+                    if (listviewitem_id == id)
+                    {
+                        int listviewitem_stok = int.Parse(item.SubItems[1].Text);
+                        if(jumlah > listviewitem_stok)
+                        {
+                            //kelebihan jumlah, stoknya kurang
+                            dataGridView1.Rows[e.RowIndex].Cells[2].Value = listviewitem_stok;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            //calculate harga
             calculateHarga();
         }
 
@@ -114,7 +153,7 @@ namespace Projek_PBO
 
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
-            string ID = listView1.SelectedItems[0].SubItems[1].Text;
+            string ID = listView1.SelectedItems[0].SubItems[3].Text;
             string nama = listView1.SelectedItems[0].SubItems[0].Text;
             string harga = listView1.SelectedItems[0].SubItems[2].Text;
             // check kl udah ada / blm
@@ -167,10 +206,11 @@ namespace Projek_PBO
         }
         private void addToListView(Item item)
         {
-            //subitem = id, harga, stock
+            //subitem = stok, harga, id
             ListViewItem listViewItem = new ListViewItem(item.Nama);
-            listViewItem.SubItems.Add(item.Id.ToString());
+            listViewItem.SubItems.Add(item.Stock.ToString());
             listViewItem.SubItems.Add(item.Harga.ToString());
+            listViewItem.SubItems.Add(item.Id.ToString());
             listView1.Items.Add(listViewItem);
         }
         private void addToKeranjang(string ID, string nama, string harga)
