@@ -8,14 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Npgsql;
 
-namespace Projek_PBO
-{
+namespace Projek_PBO { 
+
     public partial class Transaksi : Form
     {
         DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
         private List<Item> items = new List<Item>();
         private static Random random = new Random();
+        private int operator_id = 1;
         public Transaksi()
         {
             InitializeComponent();
@@ -208,7 +210,7 @@ namespace Projek_PBO
         {
             items.Clear();
             DataSet ds = new DataSet();
-            databaseManager.Select(ref ds, "", "SELECT * FROM BARANG ORDER BY id_barang ASC");
+            databaseManager.ExecuteQuery(ref ds, "SELECT * FROM BARANG WHERE stok_barang > 0 ORDER BY id_barang ASC");
             foreach (DataRow row in ds.Tables[0].Rows)
             {
                 Item item = new Item(row);
@@ -286,31 +288,61 @@ namespace Projek_PBO
                 return;
             }
 
-            foreach(DataGridViewRow row in dataGridView1.Rows)
+            // insert ke transaksi
+            int totalHarga = int.Parse(textBoxTotal.Text);
+            NpgsqlParameter[] transaksiParameter = new NpgsqlParameter[1];
+            transaksiParameter[0] = new NpgsqlParameter("@total_harga", totalHarga);
+            //databaseManager.ExecuteNonQuery("INSERT INTO transaksi(tanggal_transaksi, total_harga) VALUES(NOW(), @total_harga)", transaksiParameter);
+            DataSet dataSetTR = new DataSet();
+            databaseManager.ExecuteQuery(ref dataSetTR, "INSERT INTO transaksi(tanggal_transaksi, total_harga) VALUES(NOW(), @total_harga) RETURNING *", transaksiParameter);
+            // get id from returning
+            int transaksi_id = int.Parse(dataSetTR.Tables[0].Rows[0]["id_transaksi"].ToString());
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 // null check
                 if(row.Cells[0].Value != null && row.Cells[0].Value.ToString().Length >= 1)
                 {
                     int id = int.Parse(row.Cells[0].Value.ToString());
                     int jumlah = int.Parse(row.Cells[2].Value.ToString());
+                    int harga = 0;
                     int stok = 0;
                     foreach(Item item in items)
                     {
                         if(item.Id == id)
                         {
                             stok = item.Stock;
+                            harga = item.Harga;
                             break;
                         }
                     }
+                    // update stok
                     int newStok = stok - jumlah;
-                    Npgsql.NpgsqlParameter[] parameters = new Npgsql.NpgsqlParameter[2];
-                    parameters[0] = new Npgsql.NpgsqlParameter("@stok", newStok);
-                    parameters[1] = new Npgsql.NpgsqlParameter("@id", id);
+                    NpgsqlParameter[] parameters = new NpgsqlParameter[2];
+                    parameters[0] = new NpgsqlParameter("@stok", newStok);
+                    parameters[1] = new NpgsqlParameter("@id", id);
                     databaseManager.ExecuteNonQuery("UPDATE barang SET stok_barang = @stok WHERE id_barang = @id", parameters);
+
+                    // insert ke detail_transaksi
+                    NpgsqlParameter[] dtParameters = new NpgsqlParameter[5];
+                    dtParameters[0] = new NpgsqlParameter("@jumlah_barang", jumlah);
+                    dtParameters[1] = new NpgsqlParameter("@harga", jumlah * harga);
+                    dtParameters[2] = new NpgsqlParameter("@barang_id_barang", id);
+                    dtParameters[3] = new NpgsqlParameter("@transaksi_id_transaksi", transaksi_id);
+                    dtParameters[4] = new NpgsqlParameter("@operator_id_operator", operator_id);
+                    databaseManager.ExecuteNonQuery("INSERT INTO detail_transaksi(jumlah_barang, harga, barang_id_barang, transaksi_id_transaksi, operator_id_operator) VALUES(@jumlah_barang, @harga, @barang_id_barang, @transaksi_id_transaksi, @operator_id_operator)", dtParameters);
                 }
             }
+            
             refresh_db();
             refresh_listView();
+
+            //clear all, post checkout
+            dataGridView1.Rows.Clear();
+            textBoxDiskon.Text = "";
+            textBoxTotal.Text = "";
+            textBoxBayar.Text = "";
+            textBoxKembalian.Text = "";
         }
     }
 
