@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using Npgsql;
 
-namespace tugas_npgsql
+namespace Projek_PBO
 {
     public class DatabaseManager
     {
@@ -25,7 +25,7 @@ namespace tugas_npgsql
         {
             con.Close();
         }
-        public bool Select(ref DataTable dataTable, string? table, string? query = null, NpgsqlParameter[]? parameter = null)
+        public bool Select(ref DataSet dataSet, string table = null, string query = null, NpgsqlParameter[] parameter = null)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace tugas_npgsql
                 }
                 cmd.Connection.Open();
                 NpgsqlDataAdapter npgsqlDataAdapter = new NpgsqlDataAdapter(cmd);
-                npgsqlDataAdapter.Fill(dataTable);
+                npgsqlDataAdapter.Fill(dataSet);
                 cmd.Connection.Close();
                 cmd.Dispose();
                 return true;
