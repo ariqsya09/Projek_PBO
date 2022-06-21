@@ -16,5 +16,17 @@ namespace Projek_PBO
         {
             InitializeComponent();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Barang barang = new Barang();
+            barang.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Transaksi transaksi = new Transaksi();
+            transaksi.Show();
+        }
     }
 }
