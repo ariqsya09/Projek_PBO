@@ -69,9 +69,10 @@ namespace Projek_PBO
             NpgsqlCommand cmd = con.CreateCommand();
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = query;
-            if(parameters != null)
-            foreach (var p in parameters)
-                cmd.Parameters.Add(p);
+            if (parameters != null)
+                foreach (var p in parameters)
+                    if (p != null)
+                        cmd.Parameters.Add(p);
             cmd.Connection.Open();
             NpgsqlDataAdapter npgsqlDataAdapter = new NpgsqlDataAdapter(cmd);
             npgsqlDataAdapter.Fill(dataSet);

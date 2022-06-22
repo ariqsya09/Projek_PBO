@@ -103,6 +103,12 @@
     <Compile Include="Beranda.Designer.cs">
       <DependentUpon>Beranda.cs</DependentUpon>
     </Compile>
+    <Compile Include="HistoryTransaksi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HistoryTransaksi.Designer.cs">
+      <DependentUpon>HistoryTransaksi.cs</DependentUpon>
+    </Compile>
     <Compile Include="Item.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
@@ -130,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Beranda.resx">
       <DependentUpon>Beranda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HistoryTransaksi.resx">
+      <DependentUpon>HistoryTransaksi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
