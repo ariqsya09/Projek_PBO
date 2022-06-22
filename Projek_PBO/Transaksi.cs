@@ -48,8 +48,8 @@ namespace Projek_PBO {
 
         private void TextBoxBayar_TextChanged(object sender, EventArgs e)
         {
-            int total = int.Parse(textBoxTotal.Text);
-            int bayar = int.Parse(textBoxBayar.Text);
+            int total = int.Parse(textBoxTotal.Text == "" ? "0" : textBoxTotal.Text);
+            int bayar = int.Parse(textBoxBayar.Text == "" ? "0" :textBoxBayar.Text);
             textBoxKembalian.Text = (bayar - total).ToString();
         }
 
@@ -333,7 +333,14 @@ namespace Projek_PBO {
                     databaseManager.ExecuteNonQuery("INSERT INTO detail_transaksi(jumlah_barang, harga, barang_id_barang, transaksi_id_transaksi, operator_id_operator) VALUES(@jumlah_barang, @harga, @barang_id_barang, @transaksi_id_transaksi, @operator_id_operator)", dtParameters);
                 }
             }
-            
+
+            //get date
+            String dt = dataSetTR.Tables[0].Rows[0]["tanggal_transaksi"].ToString();
+            //nota
+            Nota nota = new Nota(dataGridView1.Rows, dt, totalHarga.ToString());
+            var p = dataGridView1.Rows;
+            nota.ShowDialog();
+
             refresh_db();
             refresh_listView();
 
