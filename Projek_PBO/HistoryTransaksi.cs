@@ -16,6 +16,7 @@ namespace Projek_PBO
     {
         DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
         DataSet ds = new DataSet();
+        int totalPendapatan = 0;
         public HistoryTransaksi()
         {
             InitializeComponent();
@@ -26,8 +27,12 @@ namespace Projek_PBO
         }
         void initData()
         {
+            //reset
+            totalPendapatan = 0;
             ds.Clear();
             listView1.Items.Clear();
+
+            //query
             String query = "SELECT distinct(t.id_transaksi), o.nama_lengkap, t.tanggal_transaksi, t.total_harga FROM transaksi t JOIN detail_transaksi dt ON t.id_transaksi = dt.transaksi_id_transaksi JOIN operator o ON dt.operator_id_operator = o.id_operator ORDER BY id_transaksi";
             NpgsqlParameter[] parameters = new NpgsqlParameter[1];
             switch (comboBox1.SelectedIndex)
@@ -48,8 +53,6 @@ namespace Projek_PBO
                 default:
                     break;
             }
-            Debug.Print(query);
-            Debug.Print(dateTimePicker1.Value.Year.ToString() + '-' + dateTimePicker1.Value.Month.ToString() + '-' + dateTimePicker1.Value.Day.ToString());
             if (comboBox1.SelectedIndex == 0)
                 databaseManager.ExecuteQuery(ref ds, query);
             else
@@ -65,7 +68,11 @@ namespace Projek_PBO
                 item.SubItems.Add(pendapatan);
                 item.SubItems.Add(id);
                 listView1.Items.Add(item);
+
+                totalPendapatan += int.Parse(pendapatan);
             }
+
+            label1.Text = "Total: " + totalPendapatan;
         }
 
         private void listView1_DoubleClick(object sender, EventArgs e)
