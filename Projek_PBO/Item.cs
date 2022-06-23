@@ -51,17 +51,17 @@ namespace Projek_PBO
             parameters[1] = new NpgsqlParameter("@id_barang", Id);
             databaseManager.ExecuteNonQuery("UPDATE barang SET stok_barang = @stok_barang WHERE id_barang = @id_barang", parameters);
         }
-        public Item insertItem(string nama, int harga, int stock = 1)
+        public static Item insertItem(string nama, int harga, int stock = 1)
         {
             System.Data.DataSet ds = new System.Data.DataSet();
             DatabaseManager databaseManager = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
             NpgsqlParameter[] parameters = new NpgsqlParameter[3];
             parameters[0] = new NpgsqlParameter("@nama_barang", nama);
             parameters[1] = new NpgsqlParameter("@harga_barang", harga);
-            parameters[1] = new NpgsqlParameter("@stok_barang", stock);
+            parameters[2] = new NpgsqlParameter("@stok_barang", stock);
             databaseManager.ExecuteQuery(ref ds, "INSERT INTO barang(nama_barang, harga_barang, stok_barang) VALUES(@nama_barang, @harga_barang, @stok_barang) RETURNING *", parameters);
 
-            int id = int.Parse(ds.Tables[0].Rows[0].ToString());
+            int id = int.Parse(ds.Tables[0].Rows[0]["id_barang"].ToString());
             Item item = new Item(id, nama, harga, stock);
             return item;
         }
