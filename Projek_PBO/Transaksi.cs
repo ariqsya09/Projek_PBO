@@ -19,9 +19,10 @@ namespace Projek_PBO {
         private List<Item> items = new List<Item>();
         private static Random random = new Random();
         private int operator_id = 1;
-        public Transaksi()
+        public Transaksi(int id_operator)
         {
             InitializeComponent();
+            this.operator_id = id_operator;
 
 
             

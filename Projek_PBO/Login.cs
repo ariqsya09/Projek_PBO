@@ -42,7 +42,7 @@ namespace Projek_PBO
             Debug.Print(ds.Tables[0].Rows.Count.ToString());
             if (ds.Tables[0].Rows.Count > 0)
             {
-                Beranda sd = new Beranda();
+                Beranda sd = new Beranda(int.Parse(ds.Tables[0].Rows[0]["id_operator"].ToString()));
                 this.Hide();
                 sd.ShowDialog();
                 this.Close();

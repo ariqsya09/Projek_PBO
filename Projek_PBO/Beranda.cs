@@ -12,9 +12,11 @@ namespace Projek_PBO
 {
     public partial class Beranda : Form
     {
-        public Beranda()
+        private int id_operator;
+        public Beranda(int id_operator)
         {
             InitializeComponent();
+            this.id_operator = id_operator;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -27,7 +29,7 @@ namespace Projek_PBO
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Transaksi transaksi = new Transaksi();
+            Transaksi transaksi = new Transaksi(id_operator);
             this.Hide();
             transaksi.ShowDialog();
             this.Show();
