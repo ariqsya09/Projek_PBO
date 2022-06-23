@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -17,16 +18,8 @@ namespace Projek_PBO
         List<Item> items = new List<Item>();
         public Barang()
         {
-            DatabaseManager db = new DatabaseManager("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;");
-            DataSet ds = new DataSet();
             InitializeComponent();
-            db.ExecuteQuery(ref ds, "Select * from barang");  
-            dataGridView1.DataSource = ds.Tables[0];
-            foreach (DataRow Row in ds.Tables[0].Rows)
-            {
-                Item item = new Item(Convert.ToInt32(Row["id_barang"].ToString()),Row["nama_barang"].ToString(),Convert.ToInt32(Row["harga_barang"].ToString()),Convert.ToInt32(Row["stok_barang"].ToString()));
-                items.Add(item);
-            }
+            load_data();
         }
 
         int id,i, j;
@@ -68,21 +61,15 @@ namespace Projek_PBO
       
         public void load_data()
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
+            items.Clear();
+            DatabaseManager db = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
+            DataSet ds = new DataSet();
+            db.ExecuteQuery(ref ds, "SELECT * FROM barang WHERE id_barang > -1");
+            dataGridView1.DataSource = ds.Tables[0];
+            foreach (DataRow Row in ds.Tables[0].Rows)
             {
-                connection.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "Select * from barang";
-                cmd.CommandType = CommandType.Text;
-                NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                cmd.Dispose();
-                connection.Close();
-
-                dataGridView1.AutoGenerateColumns = false;
-                dataGridView1.DataSource = dt;
+                Item item = new Item(Convert.ToInt32(Row["id_barang"].ToString()), Row["nama_barang"].ToString(), Convert.ToInt32(Row["harga_barang"].ToString()), Convert.ToInt32(Row["stok_barang"].ToString()));
+                items.Add(item);
             }
         }
         private void button1_Click(object sender, EventArgs e)
