@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,7 +15,7 @@ namespace Projek_PBO
 {
     public partial class HistoryTransaksi : Form
     {
-        DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
+        DatabaseManager databaseManager = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
         DataSet ds = new DataSet();
         int totalPendapatan = 0;
         public HistoryTransaksi()
@@ -22,8 +23,6 @@ namespace Projek_PBO
             InitializeComponent();
             comboBox1.SelectedIndex = 2;
             initData();
-            Debug.Print(dateTimePicker1.Value.ToString());
-            Debug.Print(dateTimePicker1.Value.Year.ToString() + '-' + dateTimePicker1.Value.Month + '-' + dateTimePicker1.Value.Day);
         }
         void initData()
         {

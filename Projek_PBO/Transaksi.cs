@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -14,7 +15,7 @@ namespace Projek_PBO {
 
     public partial class Transaksi : Form
     {
-        DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
+        DatabaseManager databaseManager = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
         private List<Item> items = new List<Item>();
         private static Random random = new Random();
         private int operator_id = 1;

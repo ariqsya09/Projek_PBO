@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Projek_PBO
 {
     public partial class Nota : Form
     {
-        DatabaseManager databaseManager = new DatabaseManager("Host=localhost;Database=project_pbo;Username=postgres;Password=respect1945");
+        DatabaseManager databaseManager = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
         public Nota(DataGridViewRowCollection rows = null, String date = "", String totalHarga = "")
         {
             InitializeComponent();
