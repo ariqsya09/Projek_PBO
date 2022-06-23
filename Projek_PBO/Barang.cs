@@ -14,24 +14,18 @@ namespace Projek_PBO
 {
     public partial class Barang : Form
     {
+        List<Item> items = new List<Item>();
         public Barang()
         {
+            DatabaseManager db = new DatabaseManager("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;");
+            DataSet ds = new DataSet();
             InitializeComponent();
-            using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
+            db.ExecuteQuery(ref ds, "Select * from barang");  
+            dataGridView1.DataSource = ds.Tables[0];
+            foreach (DataRow Row in ds.Tables[0].Rows)
             {
-                connection.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "Select * from barang";
-                cmd.CommandType = CommandType.Text;
-                NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                cmd.Dispose();
-                connection.Close();
-
-                
-                dataGridView1.DataSource = dt;
+                Item item = new Item(Convert.ToInt32(Row["id_barang"].ToString()),Row["nama_barang"].ToString(),Convert.ToInt32(Row["harga_barang"].ToString()),Convert.ToInt32(Row["stok_barang"].ToString()));
+                items.Add(item);
             }
         }
 
@@ -43,17 +37,15 @@ namespace Projek_PBO
                 DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
                 if (MessageBox.Show(string.Format("Apakah yakin ingin menghapus Barang ID: {0}?", row.Cells["id_barang"].Value), "Confirmation", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
+                    var id = Convert.ToInt32(row.Cells["id_barang"].Value);
+                    foreach(Item item in items)
                     {
-                            connection.Open();
-                            NpgsqlCommand cmd = new NpgsqlCommand();
-                            cmd.Connection = connection;
-                            cmd.CommandText = "DELETE FROM barang WHERE id_barang = @id_barang";
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@id_barang", row.Cells["id_barang"].Value);
-                            cmd.ExecuteNonQuery();
-                            connection.Close();
+                        if (item.Id== id)
+                        {
+                            item.updateStock(0);
+                            break;
                         }
+                    }
                     }
 
                 load_data();
@@ -95,28 +87,14 @@ namespace Projek_PBO
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
-            {
-                //connection.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ToString();
-                connection.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "insert into barang(id_barang,nama_barang,harga_barang,stok_barang) values (@id,@nama,@harga,@stok)";
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.Add(new NpgsqlParameter("@id",6));
-                cmd.Parameters.Add(new NpgsqlParameter("@nama", tbNama.Text));
-                cmd.Parameters.Add(new NpgsqlParameter("@harga", Convert.ToInt32(tbHarga.Text)));
-                cmd.Parameters.Add(new NpgsqlParameter("@stok", Convert.ToInt32(tbStok.Text)));
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                connection.Close();
+                Item item = Item.insertItem(tbNama.Text, Convert.ToInt32(tbHarga.Text), Convert.ToInt32(tbStok.Text));
+                items.Add(item);
+
 
                 dataGridView1.AutoGenerateColumns = false;
                 load_data();
                 
                 
-
-            }
         }
 
         private void Barang_Load(object sender, EventArgs e)
@@ -124,30 +102,27 @@ namespace Projek_PBO
 
         }
 
+        private void tbNama_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void Update_Click(object sender, EventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
-            {
-                connection.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "update barang set id_barang=@ID,nama_barang=@nama,stok_barang=@stok, harga_barang=@harga where id_barang=@ID";
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.Add(new NpgsqlParameter("@ID", Convert.ToInt32(tbUpId.Text)));
-                cmd.Parameters.Add(new NpgsqlParameter("@nama", tbUpName.Text));
-                cmd.Parameters.Add(new NpgsqlParameter("@stok", Convert.ToInt32(tbUpStok.Text)));
-                cmd.Parameters.Add(new NpgsqlParameter("@harga", Convert.ToInt32(tbUpHarga.Text)));
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                connection.Close();
-                tbUpId.Text = "";
-                tbUpName.Text = "";
-                tbUpStok.Text = "";
-                tbUpHarga.Text = "";
-                lblmsg.Text = "Data berhasil di update";
-                load_data();
+                var id = Convert.ToInt32(tbUpId.Text);
+                foreach (Item item in items)
+                {
+                    if (item.Id == id)
+                    {
+                        item.updateNama(tbUpName.Text);
+                        item.updateStock(Convert.ToInt32(tbUpStok.Text));
+                        item.updateHarga(Convert.ToInt32(tbUpHarga.Text));
+                        break;
+                    }
+                }
+            load_data();
 
-            }
+ 
         }
 
         private void tbUpdate_TextChanged(object sender, EventArgs e)

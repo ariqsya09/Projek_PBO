@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -31,27 +32,21 @@ namespace Projek_PBO
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;"))
+            DatabaseManager db = new DatabaseManager("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;");
+            DataSet ds = new DataSet();
+            NpgsqlParameter[] p = new NpgsqlParameter[2];
+            p[0] = new NpgsqlParameter("@username", tbUsername.Text);
+            p[1] = new NpgsqlParameter("@password", tbPass.Text);
+            db.ExecuteQuery(ref ds, "select id_operator from operator where username = @username and password = @password",p);
+            Debug.Print(ds.Tables[0].Rows.Count.ToString());
+            if (ds.Tables[0].Rows.Count > 0)
             {
-                //connection.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ToString();
-                connection.Open();
-                NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandText = "select id_operator from operator where username='" + tbUsername.Text + "' and password='" + tbPass.Text + "'";
-                cmd.CommandType = CommandType.Text;
-                //cmd.ExecuteNonQuery();
-
-                if (cmd != null)
-                {
-                    cmd.Dispose();
-                    connection.Close();
-                    Beranda sd = new Beranda();
-                    sd.Show();
-                }
-                else
-                {
-                    lblMsg.Text = "Username atau password salah, Silahkan coba kembali!";
-                }
+                Beranda sd = new Beranda();
+                sd.Show();
+            }
+            else
+            {
+                lblMsg.Text = "Username atau password salah, Silahkan coba kembali!";
             }
         }
     }

@@ -95,6 +95,7 @@
             this.tbNama.Name = "tbNama";
             this.tbNama.Size = new System.Drawing.Size(358, 38);
             this.tbNama.TabIndex = 2;
+            this.tbNama.TextChanged += new System.EventHandler(this.tbNama_TextChanged);
             // 
             // nama
             // 
