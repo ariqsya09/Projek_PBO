@@ -105,5 +105,10 @@ namespace Projek_PBO
         {
             initData();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

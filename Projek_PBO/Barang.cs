@@ -94,6 +94,11 @@ namespace Projek_PBO
 
         }
 
+        private void back_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void Update_Click(object sender, EventArgs e)
         {
                 var id = Convert.ToInt32(tbUpId.Text);
