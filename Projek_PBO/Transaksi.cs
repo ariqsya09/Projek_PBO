@@ -312,17 +312,14 @@ namespace Projek_PBO {
                     {
                         if(item.Id == id)
                         {
+                            // update stok
                             stok = item.Stock;
                             harga = item.Harga;
+                            int newStok = stok - jumlah;
+                            item.updateStock(newStok);
                             break;
                         }
                     }
-                    // update stok
-                    int newStok = stok - jumlah;
-                    NpgsqlParameter[] parameters = new NpgsqlParameter[2];
-                    parameters[0] = new NpgsqlParameter("@stok", newStok);
-                    parameters[1] = new NpgsqlParameter("@id", id);
-                    databaseManager.ExecuteNonQuery("UPDATE barang SET stok_barang = @stok WHERE id_barang = @id", parameters);
 
                     // insert ke detail_transaksi
                     NpgsqlParameter[] dtParameters = new NpgsqlParameter[5];
