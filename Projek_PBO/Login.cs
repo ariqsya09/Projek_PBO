@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -32,7 +33,7 @@ namespace Projek_PBO
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            DatabaseManager db = new DatabaseManager("Server=localhost; Port=5432; Database=minimarket;User Id=postgres; Password=takuya123;");
+            DatabaseManager db = new DatabaseManager(ConfigurationManager.AppSettings["dbString"]);
             DataSet ds = new DataSet();
             NpgsqlParameter[] p = new NpgsqlParameter[2];
             p[0] = new NpgsqlParameter("@username", tbUsername.Text);
@@ -42,7 +43,9 @@ namespace Projek_PBO
             if (ds.Tables[0].Rows.Count > 0)
             {
                 Beranda sd = new Beranda();
-                sd.Show();
+                this.Hide();
+                sd.ShowDialog();
+                this.Close();
             }
             else
             {

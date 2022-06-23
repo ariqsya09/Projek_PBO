@@ -20,13 +20,33 @@ namespace Projek_PBO
         private void button1_Click(object sender, EventArgs e)
         {
             Barang barang = new Barang();
-            barang.Show();
+            this.Hide();
+            barang.ShowDialog();
+            this.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             Transaksi transaksi = new Transaksi();
-            transaksi.Show();
+            this.Hide();
+            transaksi.ShowDialog();
+            this.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            HistoryTransaksi historyTransaksi = new HistoryTransaksi();
+            this.Hide();
+            historyTransaksi.ShowDialog();
+            this.Show();
+        }
+
+        private void logout_Click(object sender, EventArgs e)
+        {
+            Login login = new Login();
+            this.Hide();
+            login.ShowDialog();
+            this.Close();
         }
     }
 }
