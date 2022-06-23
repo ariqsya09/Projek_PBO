@@ -35,7 +35,7 @@ namespace Projek_PBO
                     {
                         if (item.Id== id)
                         {
-                            item.updateStock(0);
+                            item.updateStock(-1);
                             break;
                         }
                     }

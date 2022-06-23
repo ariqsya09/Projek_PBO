@@ -121,6 +121,8 @@
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.listView1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "HistoryTransaksi";
             this.Text = "History Transaksi";
             this.ResumeLayout(false);
