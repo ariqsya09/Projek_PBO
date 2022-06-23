@@ -350,6 +350,11 @@ namespace Projek_PBO {
             textBoxBayar.Text = "";
             textBoxKembalian.Text = "";
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 
 
